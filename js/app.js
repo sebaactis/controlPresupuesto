@@ -23,6 +23,10 @@ class Presupuesto {
         this.restante = Number(presupuesto);
         this.gastos = [];
     }
+
+    nuevoGasto(gasto) {
+        this.gastos = [...this.gastos, gasto];
+    }
 }
 
 class UI {
@@ -57,6 +61,48 @@ class UI {
             divMensaje.remove();
         }, 3000)
     }
+
+    agregarGastoListado(gastos) {
+
+        this.limpiarHTML(); // Elimina el HTML
+
+        // Iterar sobre los gastos
+
+        gastos.forEach (gasto => {
+            const {cantidad, nombre, id} = gasto;
+
+            
+
+            // Crear un LI
+            const nuevoGasto = document.createElement('li');
+            nuevoGasto.className = 'list-group-item d-flex justify-content-between align-items-center';
+            nuevoGasto.dataset.id = id;
+
+            console.log(nuevoGasto);
+
+            // Agregar el HTML del gasto
+
+            nuevoGasto.innerHTML = `
+            ${nombre} <span class="bagde badge-primary badge-pill"> ${cantidad} </span>
+
+            `
+            // Boton para borrar gasto
+
+            const btnBorrar = document.createElement('button');
+            btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto');
+            btnBorrar.textContent = 'Borrar';
+            nuevoGasto.appendChild(btnBorrar);
+            // Agregar al HTML
+
+            gastoLista.appendChild(nuevoGasto);
+        })
+    }
+
+    limpiarHTML() {
+        while(gastoLista.firstChild) {
+            gastoLista.removeChild(gastoListagit .firstChild);
+        }
+    }
 };
 
 const ui = new UI();
@@ -83,7 +129,7 @@ function agregarGasto (e) {
 
     // Leer datos del formulario
     const nombre = document.querySelector('#gasto').value;
-    const cantidad = document.querySelector('#cantidad').value;
+    const cantidad = Number(document.querySelector('#cantidad').value);
 
     // Validar
 
@@ -95,7 +141,21 @@ function agregarGasto (e) {
         return;
     }
 
+    // Generar un objeto con el gasto
 
-    
+    const gasto = { nombre, cantidad, id: Date.now() }
+
+    //Agregar gasto
+    presupuesto.nuevoGasto(gasto);
+
+    // Mensaje correcto agregado de gasto
+    ui.imprimirAlerta('Gasto agregado');
+
+    // Imprimir gastos
+    const { gastos } = presupuesto;
+    ui.agregarGastoListado (gastos);
+
+    // Reinicia el formulario
+    formulario.reset();
 }
 
